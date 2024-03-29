@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     xvfb \
     xterm \
-    tmux
+    tmux \
+    fonts-roboto
 
 # Copy files from the previous stage
 COPY --from=build /app/scripts/stream.sh /app/scripts/stream.sh
