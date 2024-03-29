@@ -4,6 +4,8 @@ FROM node:18 AS build
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     xvfb \
+    xterm \
+    tmux \
     wget
 
 # Download and install gotty
@@ -24,13 +26,10 @@ FROM tiangolo/nginx-rtmp
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
-    curl \
     ffmpeg \
-    xvfb
-
-# Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs
+    xvfb \
+    xterm \
+    tmux
 
 # Copy files from the previous stage
 COPY --from=build /app/scripts/stream.sh /app/scripts/stream.sh
@@ -43,8 +42,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 EXPOSE 1935
 
-# Set environment variables for YouTube streaming
+# Set environment variables
 ENV YOUTUBE_URL="rtmp://a.rtmp.youtube.com/live2"
+ENV TERM=xterm
 
-# Start Nginx and the streaming script as root
-CMD ["sh", "-c", "gotty --port 3000 --permit-write bash & nginx -g 'daemon off;' & /app/scripts/stream.sh"]
+# Start Nginx, gotty, and the streaming script as root
+CMD ["sh", "-c", "nginx -g 'daemon off;' & tmux new -d -s session-01 & gotty --port 3000 --permit-write tmux attach -t session-01 & /app/scripts/stream.sh"]
