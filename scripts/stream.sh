@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Start Xvfb
-Xvfb :99 &
+# Start Xvfb with the desired screen size
+Xvfb :99 -screen 0 1280x800x24 &
 
 # Wait for Xvfb to start
 sleep 2
@@ -10,10 +10,10 @@ sleep 2
 export DISPLAY=:99
 
 # Set the desired font and font size
-xterm_font="Roboto Mono:size=18"
+xterm_font="Roboto Mono:size=12"
 
 # Start Xterm with the specified font and connect to the tmux session
-xterm -fa "$xterm_font" -fs 18 -geometry 120x30 -e "tmux attach -t session-01" &
+xterm -fa "$xterm_font" -fs 12 -geometry 124x39 -e "tmux attach -t session-01" &
 
 # Wait for Xterm to start
 sleep 2
@@ -24,5 +24,4 @@ if [ -z "$YT_STREAM_KEY" ]; then
   exit 1
 fi
 
-# Capture the Xterm window and stream it to YouTube
-ffmpeg -f x11grab -r 30 -s 1280x1024 -i :99 -f lavfi -i anullsrc -c:v libx264 -preset faster -pix_fmt yuv420p -r 30 -g 60 -b:v 4500k -f flv rtmp://a.rtmp.youtube.com/live2/$YT_STREAM_KEY
+ffmpeg -f x11grab -r 30 -s 1280x800 -i :99 -f lavfi -i anullsrc -c:v libx264 -preset faster -pix_fmt yuv420p -r 30 -g 60 -b:v 4500k -f flv rtmps://a.rtmps.youtube.com/live2/$YT_STREAM_KEY
