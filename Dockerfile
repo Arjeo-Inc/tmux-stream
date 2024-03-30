@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     xterm \
     tmux \
     fonts-roboto \
-    wget
+    wget \
+    socat
 
 # Download and install gotty
 RUN wget https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz && \
@@ -29,4 +30,4 @@ EXPOSE 3000
 ENV TERM=xterm
 
 # Start gotty and the streaming script
-CMD ["sh", "-c", "tmux new -d -s session-01 & gotty --port 3000 --permit-write tmux attach -t session-01 & /app/scripts/stream.sh"]
+CMD ["sh", "-c", "tmux new -d -s session-01 & gotty --port 3000 --permit-write tmux attach -t session-01 & /app/scripts/stream.sh | socat - TCP-LISTEN:1935,fork"]

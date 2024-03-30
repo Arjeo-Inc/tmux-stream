@@ -1,0 +1,6 @@
+FROM alpine:latest
+
+RUN apk add --no-cache ffmpeg socat
+
+# Stream the input from the TCP socket to YouTube
+CMD ["sh", "-c", "socat TCP:tmux-stream:1935 - | ffmpeg -i - -c copy -f flv rtmps://a.rtmps.youtube.com/live2/$YT_STREAM_KEY"]
