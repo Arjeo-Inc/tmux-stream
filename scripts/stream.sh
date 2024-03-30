@@ -24,4 +24,5 @@ if [ -z "$YT_STREAM_KEY" ]; then
   exit 1
 fi
 
+# Capture the Xterm window and stream it directly to YouTube using RTMPS
 ffmpeg -f x11grab -r 30 -s 1280x800 -i :99 -f lavfi -i anullsrc -c:v libx264 -preset faster -pix_fmt yuv420p -r 30 -g 60 -b:v 4500k -f flv rtmps://a.rtmps.youtube.com/live2/$YT_STREAM_KEY

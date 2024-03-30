@@ -1,4 +1,4 @@
-FROM node:18 AS build
+FROM node:18
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     xvfb \
     xterm \
     tmux \
+    fonts-roboto \
     wget
 
 # Download and install gotty
@@ -21,31 +22,11 @@ RUN mkdir -p /app/scripts
 COPY scripts/stream.sh /app/scripts/stream.sh
 RUN chmod +x /app/scripts/stream.sh
 
-# Use the tiangolo/nginx-rtmp image
-FROM tiangolo/nginx-rtmp
-
-# Install necessary dependencies
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    xvfb \
-    xterm \
-    tmux \
-    fonts-roboto
-
-# Copy files from the previous stage
-COPY --from=build /app/scripts/stream.sh /app/scripts/stream.sh
-COPY --from=build /usr/local/bin/gotty /usr/local/bin/gotty
-
-# Copy Nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # Expose ports
-EXPOSE 80
-EXPOSE 1935
+EXPOSE 3000
 
 # Set environment variables
-ENV YOUTUBE_URL="rtmp://a.rtmp.youtube.com/live2"
 ENV TERM=xterm
 
-# Start Nginx, gotty, and the streaming script as root
-CMD ["sh", "-c", "nginx -g 'daemon off;' & tmux new -d -s session-01 & gotty --port 3000 --permit-write tmux attach -t session-01 & /app/scripts/stream.sh"]
+# Start gotty and the streaming script
+CMD ["sh", "-c", "tmux new -d -s session-01 & gotty --port 3000 --permit-write tmux attach -t session-01 & /app/scripts/stream.sh"]
