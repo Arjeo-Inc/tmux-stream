@@ -76,6 +76,24 @@ Replace `<your youtube stream key>` with your actual YouTube Live stream key.
 
 7. To stop the streaming, press `Ctrl+C` in the terminal where you ran the Docker container.
 
+## Good starting sequence
+
+These commands should be invoked inside the docker, as accessed by the web-terminal service.
+
+```
+export DISPLAY=:99
+cd /root
+apt-get install -y python3-pip
+python3 -m pip install venv
+python3 -m venv .venv && source .venv/bin/activate
+pip install open-interpreter
+interpreter -y --api_base http://litellm:4000/v1 --model gpt-4-turbo-preview --context_window 128000 --max_tokens 4096 --llm_supports_functions
+
+# then inside the interpreter
+install google-chrome-stable
+apt-get install xdotool tesseract-ocr 
+pip install pytesseract 
+```
 ## Customization
 
 You can customize the project by modifying the following:
