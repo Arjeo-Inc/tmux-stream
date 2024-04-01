@@ -1,0 +1,4 @@
+FROM ghcr.io/berriai/litellm:main-latest
+WORKDIR /app
+COPY litellm-config.yaml .
+CMD ["--port", "4000", "--config", "/app/litellm-config.yaml"]

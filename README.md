@@ -41,38 +41,36 @@ To run the project, follow these steps:
 1. Clone the repository:
 
 ```
-git clone https://github.com/your-username/youtube-live-terminal-streaming.git
-
-
+git clone https://github.com/Arjeo-Inc/tmux-stream.git
 ```
 	
 2. Navigate to the project directory:
 
 ```
-cd youtube-live-terminal-streaming
-
-
+cd tmux-stream
 ```
 
-3. Build the Docker image:
+3. Build the Docker images:
 
 ```
-docker build -t youtube-terminal-streaming .
-
-
+docker build -t tmux-stream .
+docker build -f Dockerfile.streaming -t ffmpeg-stream-yt .
+docker build -f Dockerfile.litellm -t litellm . 
 ```
 
-4. Run the Docker container:
+4. Run the Docker containers:
 
 ```
-docker run -p 80:80 -p 1935:1935 -e YT_STREAM_KEY="your-youtube-stream-key" youtube-terminal-streaming
-
-
+export YT_STREAM_KEY=<your youtube stream key>
+export OPENAI_API_KEY=<your openai api key>
+docker run --name tmux-stream -p 5080:3000 -p 1935:1935 tmux-stream
+docker run --name ffmpeg-stream-yt --link tmux-stream -e YT_STREAM_KEY="$YT_STREAM_KEY" ffmpeg-stream-yt
+docker run --name litellm -e OPENAI_API_KEY="$OPENAI_API_KEY" --net tmux-stream-net litellm
 ```
 
-Replace `your-youtube-stream-key` with your actual YouTube Live stream key.
+Replace `<your youtube stream key>` with your actual YouTube Live stream key.
 
-5. Access the web-based terminal by opening a web browser and navigating to `http://localhost`.
+5. Access the web-based terminal by opening a web browser and navigating to `http://localhost:5080`.
 
 6. Interact with the terminal session as needed. The terminal window will be streamed to YouTube Live.
 
@@ -84,7 +82,6 @@ You can customize the project by modifying the following:
 
 - `Dockerfile`: Adjust the base image, install additional dependencies, or modify the build process.
 - `stream.sh`: Update the FFmpeg command parameters to change the video quality, bitrate, or other streaming settings.
-- `nginx.conf`: Modify the Nginx configuration to suit your specific requirements.
 
 ## Troubleshooting
 
@@ -94,7 +91,7 @@ If you encounter any issues while running the project, consider the following:
 - Verify that your YouTube account is in good standing and has live streaming enabled.
 - Double-check that you have provided the correct YouTube Live stream key.
 - Check the Docker logs for any error messages or indications of issues with the containers.
-- Ensure that you have the necessary ports (80 for gotty, 1935 for RTMP) open and accessible.
+- Ensure that you have the necessary ports (5080 for gotty, 1935 for RTMP) open and accessible.
 
 If the issue persists, feel free to open an issue on the GitHub repository for further assistance.
 
